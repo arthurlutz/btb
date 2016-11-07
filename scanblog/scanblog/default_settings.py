@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os.path
 from btb.log_filter import skip_unreadable_post
-BASE_DIR = os.path.dirname(os.path.dirname(__file__))
+BASE_DIR = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 TEST_RUNNER = 'btb.test_runner.BtbTestRunner'
 
@@ -186,9 +186,10 @@ CACHE_MIDDLEWARE_SECONDS = 60 * 10
 # django-registration
 ACCOUNT_ACTIVATION_DAYS = 2
 
-# Allows sending of very large files in low memory with apache; doesn't work
-# with devserver.
-X_SENDFILE_ENABLED = False
+# Allows sending of very large files in low memory; doesn't work with
+# devserver.
+X_SENDFILE_ENABLED = False # Apache only
+X_ACCEL_REDIRECT_ENABLED = False # Nginx only
 
 UPLOAD_LIMIT = 20971520 # 20MB
 SCAN_PAGES_PER_PAGE = 6
@@ -198,7 +199,7 @@ import djcelery
 djcelery.setup_loader()
 BROKER_URL = "amqp://guest:guest@localhost:5672/"
 CELERY_TRACK_STARTED = True
-CELERY_IGNORE_RESULT = True
+CELERY_IGNORE_RESULT = False
 #CELERY_RESULT_BACKEND = 'amqp'
 CELERY_RESULT_BACKEND = 'djcelery.backends.database:DatabaseBackend'
 

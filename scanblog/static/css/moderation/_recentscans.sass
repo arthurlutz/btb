@@ -1,0 +1,33 @@
+.recentscans
+  .scan
+    background: white
+    padding: 0.5em
+    margin-bottom: 1em
+    white-space: nowrap
+    overflow-x: auto
+
+  .page
+    display: inline-block
+    position: relative
+    border: 4px solid #eee
+    margin-bottom: 0.5em
+    border-radius: 5px
+
+    .documents
+      position: absolute
+      width: 100%
+      top: 0
+
+    .document
+      font-size: smaller
+      padding-bottom: 0.5em
+      white-space: normal
+      line-height: 1
+      display: block
+      background-color: rgba(255, 255, 255, 0.8)
+      &.post
+        background-color: rgba(233, 255, 233, 0.8)
+      &.profile
+        background-color: rgba(233, 233, 255, 0.8)
+      &.request
+        background-color: rgba(255, 233, 233, 0.8)

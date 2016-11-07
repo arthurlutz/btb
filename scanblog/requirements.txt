@@ -1,14 +1,19 @@
-django<1.9
+django>=1.8.14,<1.9
 psycopg2
-django-registration-redux
+django-registration-redux==1.4
+
+# Celery
 Celery
 django-celery
+amqp
+anyjson
+
 pyPdf
 pillow
 fabric
 python-magic
 django_compressor
-sorl-thumbnail>=11.12.1b
+sorl-thumbnail==12.3
 python-memcached
 -e git+https://github.com/yourcelf/django-notification.git@btb#egg=django_notification
 django-pagination

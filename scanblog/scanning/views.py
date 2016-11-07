@@ -11,7 +11,7 @@ from django.contrib.contenttypes.models import ContentType
 from django.core.exceptions import PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db import transaction
-from django.db.models import Q
+from django.db.models import Q, Prefetch
 from django.shortcuts import get_object_or_404, render, redirect
 from django.utils.translation import ugettext as _
 from django.http import Http404, HttpResponseBadRequest
@@ -603,7 +603,6 @@ def doc_delete(request, document_id=None):
     return redirect(reverse("moderation.home") + "#/process")
 
 
-
 @permission_required('scanning.change_scan')
 def scan_reimport(request, scan_id=None):
     try:
@@ -620,6 +619,57 @@ def scan_reimport(request, scan_id=None):
                     "#/process/scan/%s" % scan.id
     ).task_id
     return redirect("moderation.wait_for_processing", task_id)
+
+@permission_required('scanning.change_scan')
+def recent_scans(request):
+    scans = Scan.objects.org_filter(
+        request.user
+    ).order_by('-created')[0:100]
+    scan_ids = [s.id for s in scans]
+
+    scan_pages = ScanPage.objects.filter(
+        scan_id__in=scan_ids
+    ).select_related(
+        'scan', 'scan__author', 'scan__author__profile'
+    ).order_by(
+        '-scan__source_id',
+        'scan',
+        'order',
+    ).prefetch_related(
+        Prefetch('documentpage_set',
+            queryset=DocumentPage.objects.select_related('document'))
+    )
+
+    items = []
+    cur_scan = None
+    cur_scan_count = 0
+    cur_is_first = False
+    for scan_page in scan_pages:
+        if scan_page.scan != cur_scan:
+            cur_scan = scan_page.scan
+            cur_scan_count = 1
+            cur_is_first = True
+        else:
+            cur_scan_count += 1
+            cur_is_first = False
+        if cur_scan_count > 15:
+            items[-1]['has_more'] = True
+            continue
+        document_pages = scan_page.documentpage_set.all()
+        documents = {}
+        for doc_page in document_pages:
+            documents[doc_page.document.id] = doc_page.document
+
+        items.append({
+            'first': cur_is_first,
+            'scan': scan_page.scan,
+            'page': scan_page,
+            'documents': list(documents.values())
+        })
+
+    return render(request, "scanning/recent_scans.html", {
+        'items': items
+    })
 
 #
 # Transcriptions
