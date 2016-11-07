@@ -23,6 +23,7 @@
                                     &check;
                                     {% blocktrans with time_since_sent=comment.letter_sent|timesince %}
                                     Mailed {{ time_since_sent }} ago
+                                    {% endblocktrans %}
                                 </span>
                             {% endif %}
                         </td>
