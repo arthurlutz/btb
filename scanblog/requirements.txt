@@ -3,7 +3,7 @@ psycopg2
 django-registration-redux==1.4
 
 # Celery
-Celery
+Celery<4.0
 django-celery
 amqp
 anyjson
